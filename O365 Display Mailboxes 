@@ -1,0 +1,19 @@
+# script to list all O365 Tenant Mailboxes from Largest > Smallest in MB 
+
+$LiveCred = Get-Credential
+$Session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri https://ps.outlook.com/powershell/ -Credential $LiveCred -Authentication Basic -AllowRedirection
+Import-PSSession $Session
+
+Get-Mailbox -ResultSize Unlimited |
+
+Get-MailboxStatistics |
+
+Select DisplayName, `
+
+@{name="TotalItemSize (MB)"; expression={[math]::Round( `
+
+($_.TotalItemSize.ToString().Split("(")[1].Split(" ")[0].Replace(",","")/1MB),2)}}, `
+
+ItemCount |
+
+Sort "TotalItemSize (MB)" -Descending
